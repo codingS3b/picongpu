@@ -129,13 +129,17 @@ class Parameter(object):
             if not res:
                 raise ValueError(
                     "Invalid values found! Values should be elements of "
-                    "self.values!")
+                    "{0} but are {1}!".format(
+                        self.values, vals
+                    ))
         else:
             # check for valid range
             res = all([self.range[0] <= v <= self.range[1] for v in vals])
             if not res:
                 raise ValueError("Invalid values found! Values should be "
-                                 "contained in self.range!")
+                                 "contained in {0} but are {1}!".format(
+                                     self.range, vals
+                                 ))
 
     def convert_to_PIC(self, vals, check_vals=False):
         """
