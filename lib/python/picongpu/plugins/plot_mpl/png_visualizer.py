@@ -16,15 +16,16 @@ class Visualizer(BaseVisualizer):
     Class for providing a plot of a PNG file using matplotlib.
     """
 
-    def __init__(self, run_directory):
+    def __init__(self, run_directory, ax):
         """
         Parameters
         ----------
         run_directory: string
             path to the run directory of PIConGPU
             (the path before ``simOutput/``)
+        ax: matplotlib.axes.Axes instance.
         """
-        super(Visualizer, self).__init__(run_directory)
+        super(Visualizer, self).__init__(run_directory, ax)
 
     def _create_data_reader(self, run_directory):
         """
@@ -33,12 +34,12 @@ class Visualizer(BaseVisualizer):
 
         return PNG(run_directory)
 
-    def _create_plt_obj(self, ax):
+    def _create_plt_obj(self):
         """
         Implementation of base class function.
         Turns 'self.plt_obj' into a matplotlib.image.AxesImage object.
         """
-        self.plt_obj = ax.imshow(self.data)
+        self.plt_obj = self.ax.imshow(self.data)
 
     def _update_plt_obj(self):
         """
@@ -46,15 +47,13 @@ class Visualizer(BaseVisualizer):
         """
         self.plt_obj.set_data(self.data)
 
-    def visualize(self, ax=None, **kwargs):
+    def visualize(self, **kwargs):
         """
         Creates a plot on the provided axes object for
         the PNG file of the given iteration using matpotlib.
 
         Parameters
         ----------
-        ax: matplotlib axes object
-            the part of the figure where this plot will be shown.
         kwargs: dict
             additional keyword args. Necessary are the following:
             species : string
@@ -74,8 +73,7 @@ class Visualizer(BaseVisualizer):
                 if set to 'None', then return images for all available\
                     iterations
         """
-        ax = self._ax_or_gca(ax)
-        super(Visualizer, self).visualize(ax, **kwargs)
+        super(Visualizer, self).visualize(**kwargs)
 
 
 if __name__ == '__main__':
@@ -144,9 +142,9 @@ if __name__ == '__main__':
             print("Offset was not given, will determine from file")
 
         fig, ax = plt.subplots(1, 1)
-        Visualizer(path).visualize(ax, iteration=iteration, species=species,
-                                   species_filter=filtr, axis=axis,
-                                   slice_point=slice_point)
+        Visualizer(path, ax).visualize(iteration=iteration, species=species,
+                                       species_filter=filtr, axis=axis,
+                                       slice_point=slice_point)
         plt.show()
 
     main()
