@@ -22,7 +22,6 @@ def read_range_file(file, values_only=True):
         "values": [v1, v2]
     }
 
-    assumed to
     Parameters
     ----------
     file: str
@@ -54,6 +53,43 @@ def read_range_file(file, values_only=True):
         return filtered_range_dict
     else:
         return range_dict
+
+
+def write_range_file(range_dict, parameters, file):
+    """
+    Writes a json file for a PIC scan or simulation.
+
+    Parameters
+    ----------
+    range_dict: dict
+        dictionary with parameter names mapping to a list
+        of their values.
+    parameters: dict
+        dictionary with parameter names mapping to parameter objects to know about
+        their compile or runtime status
+    file: str
+        The full directory to the output file.
+    """
+
+    if os.path.isfile(file):
+        raise IOError(
+            "Range file {} already exists!".format(file))
+
+    # add the type of parameter to the file
+    augmented_range_dict = dict()
+    for name, vals in range_dict.items():
+        if name not in parameters:
+            msg = "Parameter {} of range_dict not present in parameters!"
+            raise ValueError(msg.format(name))
+
+        param = parameters[name]
+        augmented_range_dict[name] = {
+            'type': param.type,
+            'values': vals
+        }
+
+    with open(file, "w") as of:
+        json.dump(augmented_range_dict, of, indent=2)
 
 
 def to_macro_name(name):
